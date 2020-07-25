@@ -1,8 +1,11 @@
 const users = [];
+const rooms = [];
 
 const addUser = ({ id, username, room }) => {
   username = username.trim().toLowerCase();
   room = room.trim().toLowerCase();
+
+  addRoom(room);
 
   if (!username || !room) {
     return { error: "Username and room are required!" };
@@ -21,16 +24,34 @@ const addUser = ({ id, username, room }) => {
   return { user };
 };
 
+const addRoom = (room) => {
+  if (!rooms.find((item) => item === room)) {
+    rooms.push(room);
+  }
+};
+
 const removeUser = (id) => {
   const index = users.findIndex((user) => {
     return user.id === id;
   });
 
   if (index !== -1) {
+    removeRoom(id);
     return users.splice(index, 1)[0];
   }
 
   return { error: "User not found!" };
+};
+
+const removeRoom = (id) => {
+  const room = users.find((user) => user.id === id).room;
+
+  if (getUsersInRoom(room).length === 1) {
+    const index = rooms.findIndex((item) => item === room);
+    if (index !== -1) {
+      rooms.splice(index, 1)[0];
+    }
+  }
 };
 
 const getUser = (id) => users.find((user) => user.id === id);
@@ -43,9 +64,14 @@ const getUsersInRoom = (room) => {
   return [];
 };
 
+const getRooms = () => {
+  return rooms;
+};
+
 module.exports = {
   addUser,
   removeUser,
   getUser,
   getUsersInRoom,
+  getRooms,
 };

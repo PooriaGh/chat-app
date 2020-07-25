@@ -14,7 +14,7 @@ const locationMessagesTemplate = document.querySelector(
 ).innerHTML;
 const sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
 
-const { username, room } = Qs.parse(location.search, {
+const { username, room, existingRoom } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
@@ -101,12 +101,27 @@ $sendLocationButton.addEventListener("click", () => {
   );
 });
 
-socket.emit("join", { username, room }, (error) => {
-  if (error) {
-    alert("Username is in use!");
-    location.href = "/";
+if (room === "" && existingRoom === "none") {
+  alert("Write a new room or choose one of existing rooms!");
+  location.href = "/";
+} else {
+  if (existingRoom === "none") {
+    socket.emit("join", { username, room }, (error) => {
+      if (error) {
+        alert("Username is in use!");
+        location.href = "/";
+      }
+    });
   }
-});
+  if (room === "") {
+    socket.emit("join", { username, room: existingRoom }, (error) => {
+      if (error) {
+        alert("Username is in use!");
+        location.href = "/";
+      }
+    });
+  }
+}
 
 socket.on("roomData", ({ room, users }) => {
   const html = Mustache.render(sidebarTemplate, {

@@ -12,6 +12,7 @@ const {
   removeUser,
   getUser,
   getUsersInRoom,
+  getRooms,
 } = require("./utils/users");
 
 const app = express();
@@ -23,10 +24,10 @@ const publicDirectoryPath = path.join(__dirname, "../public");
 
 app.use(express.static(publicDirectoryPath));
 
-let count = 0;
-
 io.on("connection", (socket) => {
   console.log("New WebSocket connection");
+
+  io.emit("rooms", getRooms());
 
   socket.on("join", (options, callBack) => {
     const { error, user } = addUser({ id: socket.id, ...options });
@@ -48,6 +49,8 @@ io.on("connection", (socket) => {
       room: user.room,
       users: getUsersInRoom(user.room),
     });
+
+    io.emit("rooms", getRooms());
   });
 
   socket.on("message", (message, callBack) => {
@@ -93,6 +96,8 @@ io.on("connection", (socket) => {
         room: user.room,
         users: getUsersInRoom(user.room),
       });
+
+      io.emit("rooms", getRooms());
     }
   });
 });

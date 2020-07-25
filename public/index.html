@@ -20,10 +20,29 @@
             required
           />
           <label>Room</label>
-          <input type="text" name="room" placeholder="Room" required />
+          <input type="text" name="room" placeholder="Wirte a new room name" />
+          <span id="rooms"></span>
           <button>Join</button>
         </form>
       </div>
     </div>
+
+    <script id="room-template" type="text/html">
+        <select name="existingRoom" style="
+        margin-bottom: 16px;
+        width: 100%;
+        border: 1px solid #eee;
+        padding: 12px;
+      ">
+          <option value="none">-- Choose a room --</option>
+          {{#rooms}}
+            <option value={{.}}>{{.}}</option>
+          {{/rooms}}
+        </select>
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/index.js"></script>
   </body>
 </html>
